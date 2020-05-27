@@ -1,0 +1,10 @@
+inoremap jj <Esc>
+set ignorecase
+set smartcase
+set hlsearch
+
+let mapleader=" "
+set easymotion
+set commentary
+set surround
+set smartcaseset ideajoin

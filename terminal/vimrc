@@ -50,6 +50,7 @@ set ignorecase
 set smartcase
 set hlsearch
 set incsearch
+set termguicolors
 
 inoremap jj <Esc>
 nnoremap <silent> <C-l> :nohl<CR><C-l>

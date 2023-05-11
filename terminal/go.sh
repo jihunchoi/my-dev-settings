@@ -1,4 +1,4 @@
-for cmd in git vim zsh tmux
+for cmd in git vim zsh tmux brew
 do
     if ! type $cmd > /dev/null; then
         echo "You have to install $cmd first!"
@@ -6,8 +6,12 @@ do
     fi
 done
 
-# Install Vundle
-git clone https://github.com/gmarik/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim
+# Install fzf
+brew install fzf
+/opt/homebrew/opt/fzf/install
+
+# Install direnv
+brew install direnv
 
 # Install oh-my-zsh
 install_oh_my_zsh () {
@@ -20,10 +24,7 @@ cp -f ./zshrc $HOME/.zshrc
 cp -f ./vimrc $HOME/.vimrc
 cp -f ./tmux.conf $HOME/.tmux.conf
 cp -f ./direnvrc $HOME/.direnvrc
-cp -f ./zprofile $HOME/.zprofile
-
-# Install Vundle plugins
-vim +PluginInstall +qall
+cat zprofile >> $HOME/.zprofile
 
 # Setup git
 echo ""

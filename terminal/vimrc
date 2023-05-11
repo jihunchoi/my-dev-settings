@@ -11,7 +11,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-repeat'
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'altercation/vim-colors-solarized'
+Plug 'morhetz/gruvbox'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'edkolev/tmuxline.vim'
@@ -27,9 +27,11 @@ filetype plugin indent on    " required
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
+colorscheme gruvbox
+
 let g:sneak#label = 1
-let g:airline_powerline_fonts=1
-let g:airline_theme='solarized'
+let g:airline_powerline_fonts = 1
+let g:airline_theme = 'gruvbox'
 
 let mapleader=' '
 
@@ -56,5 +58,3 @@ inoremap jj <Esc>
 nnoremap <silent> <C-l> :nohl<CR><C-l>
 
 map <C-n> :NERDTreeToggle<CR>
-
-colorscheme solarized

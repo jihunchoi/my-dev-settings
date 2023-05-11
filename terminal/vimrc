@@ -27,17 +27,19 @@ filetype plugin indent on    " required
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-colorscheme gruvbox
+syntax on
+set t_Co=256
+colorscheme solarized
+let g:airline_powerline_fonts = 1
+let g:airline_theme = 'solarized'
+set background=light
 
 let g:sneak#label = 1
-let g:airline_powerline_fonts = 1
-let g:airline_theme = 'gruvbox'
 
 let mapleader=' '
 
 set laststatus=2
 
-set t_Co=256
 set bs=2
 
 syntax on
@@ -52,7 +54,6 @@ set ignorecase
 set smartcase
 set hlsearch
 set incsearch
-set termguicolors
 
 inoremap jj <Esc>
 nnoremap <silent> <C-l> :nohl<CR><C-l>

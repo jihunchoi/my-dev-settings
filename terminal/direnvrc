@@ -1,6 +1,6 @@
 layout_anaconda() {
     # Ref Url: https://github.com/direnv/direnv/wiki/Python
-    local ACTIVATE="${HOME}/opt/anaconda3/bin/activate"
+    local ACTIVATE="${CONDA_PREFIX}/bin/activate"
     if [ -n "$1" ]; then
         # Explicit environment name from layout command.
         local env_name="$1"

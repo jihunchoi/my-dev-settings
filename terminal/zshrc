@@ -99,8 +99,12 @@ source $ZSH/oh-my-zsh.sh
 alias cp='cp -i'
 alias mv='mv -i'
 alias rm='rm -i'
-
 alias tmux='direnv exec / tmux'
+alias vi='nvim'
+alias vim='nvim'
+
+# Allow zsh to pass unevaluated wildcard arguments
+setopt nonomatch
 
 # <<< direnv init <<<
 # Ref Url: https://github.com/direnv/direnv/wiki/Python

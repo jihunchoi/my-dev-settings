@@ -1,4 +1,4 @@
-for cmd in git vim zsh tmux brew
+for cmd in git nvim zsh tmux brew
 do
     if ! type $cmd > /dev/null; then
         echo "You have to install $cmd first!"
@@ -20,11 +20,10 @@ install_oh_my_zsh () {
 install_oh_my_zsh
 
 # Copy configuration files
-cp -f ./zshrc $HOME/.zshrc
-cp -f ./vimrc $HOME/.vimrc
-cp -f ./tmux.conf $HOME/.tmux.conf
-cp -f ./direnvrc $HOME/.direnvrc
-cat zprofile >> $HOME/.zprofile
+cp ./zshrc $HOME/.zshrc
+cp ./vimrc $HOME/.vimrc
+cp ./tmux.conf $HOME/.tmux.conf
+cp ./direnvrc $HOME/.direnvrc
 
 # Setup git
 echo ""

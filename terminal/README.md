@@ -1,10 +1,12 @@
 # My Terminal Settings
 My minimal settings. Inspired by resources found on web.
+
 ## Preparation
-* iTerm 2, Solarized Light theme
+* iTerm 2 with Solarized Light color scheme
 * Powerline-patched font (e.g. Hack)
+
 ## What it contains
-* vim settings
+* Neovim settings
     * Vundle
     * vim-airline
     * vim-fugitive
@@ -18,5 +20,6 @@ My minimal settings. Inspired by resources found on web.
 * tmux settings
     * tmuxline-based settings
     * Shortcuts
+
 ## How to
 * Run `bash go.sh`

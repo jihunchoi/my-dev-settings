@@ -1,0 +1,16 @@
+# Antidote
+source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
+antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.txt
+
+# Aliases
+alias rm='rm -i'
+alias mv='mv -i'
+alias cp='cp -i'
+alias vim='nvim'
+alias vi='nvim'
+
+# Plugins
+source <(fzf --zsh)
+
+# PATH
+export PATH="$HOME/.local/bin:$PATH"

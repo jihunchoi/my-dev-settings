@@ -29,7 +29,6 @@ Plug 'easymotion/vim-easymotion'
 -- Appearance
 Plug 'shaunsingh/solarized.nvim'
 Plug 'nvim-lualine/lualine.nvim'
-Plug 'edkolev/tmuxline.vim'
 
 vim.call('plug#end')
 

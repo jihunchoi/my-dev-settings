@@ -39,18 +39,14 @@ vim.opt.number = true
 vim.opt.clipboard = 'unnamedplus'
 vim.opt.termguicolors = true
 
--- Clipboard: OSC 52 for copy (forwards yanks to the host clipboard via the terminal).
--- Paste falls back to the unnamed register because OSC 52 read is unreliable through
--- tmux / most terminals; paste from the host clipboard via the terminal's own
--- paste shortcut (e.g. Cmd+V) in insert mode — bracketed paste handles it.
+-- Clipboard: OSC 52 for both copy and paste (host clipboard over SSH / nested terminals).
+-- Requires the terminal to allow OSC 52 read (e.g. iTerm2: Settings → General → Selection →
+-- "Applications in terminal may access clipboard"). Tmux needs `set -g set-clipboard on`.
 local osc52 = require('vim.ui.clipboard.osc52')
-local function paste_from_unnamed()
-    return { vim.fn.getreg('"', 1, true), vim.fn.getregtype('"') }
-end
 vim.g.clipboard = {
-    name = 'osc52-copy',
+    name = 'osc52',
     copy = { ['+'] = osc52.copy('+'), ['*'] = osc52.copy('*') },
-    paste = { ['+'] = paste_from_unnamed, ['*'] = paste_from_unnamed },
+    paste = { ['+'] = osc52.paste('+'), ['*'] = osc52.paste('*') },
 }
 vim.opt.background = 'light'
 vim.cmd('colorscheme solarized')

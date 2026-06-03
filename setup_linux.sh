@@ -12,6 +12,12 @@ ZDOTDIR="${ZDOTDIR:-$HOME}"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 ANTIDOTE_DIR="${ANTIDOTE_HOME:-$XDG_DATA_HOME/antidote}"
+LOCAL_BIN="$HOME/.local/bin"
+MIN_NVIM_VERSION="${MIN_NVIM_VERSION:-0.10.0}"
+NEOVIM_VERSION="${NEOVIM_VERSION:-latest}"
+NEOVIM_INSTALL_DIR="${NEOVIM_INSTALL_DIR:-$XDG_DATA_HOME/neovim-$NEOVIM_VERSION}"
+
+export PATH="$LOCAL_BIN:$PATH"
 
 info() { echo -e "\033[1;34m[INFO]\033[0m $1"; }
 success() { echo -e "\033[1;32m[SUCCESS]\033[0m $1"; }
@@ -70,10 +76,10 @@ check_required_tools() {
     local required=(
         "git:git"
         "zsh:zsh"
-        "nvim:neovim"
         "tmux:tmux"
         "fzf:fzf"
         "curl:curl"
+        "tar:tar"
     )
     local missing_packages=()
     local entry command package
@@ -90,7 +96,7 @@ check_required_tools() {
 }
 
 verify_required_tools() {
-    local commands=(git zsh nvim tmux fzf curl)
+    local commands=(git zsh tmux fzf curl tar)
     local missing_commands=()
     local command
 
@@ -104,6 +110,101 @@ verify_required_tools() {
         error "Required commands are still missing: ${missing_commands[*]}"
         exit 1
     fi
+}
+
+nvim_current_version() {
+    command -v nvim >/dev/null 2>&1 || return 1
+    nvim --version | sed -n '1s/^NVIM v\([0-9][0-9.]*\).*/\1/p'
+}
+
+version_at_least() {
+    local current="$1"
+    local minimum="$2"
+
+    [[ -n "$current" ]] && [[ "$(printf '%s\n' "$minimum" "$current" | sort -V | head -n1)" == "$minimum" ]]
+}
+
+neovim_release_asset() {
+    case "$(uname -m)" in
+        x86_64|amd64)
+            echo "nvim-linux-x86_64"
+            ;;
+        aarch64|arm64)
+            echo "nvim-linux-arm64"
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+install_user_neovim() {
+    local asset
+    local archive
+    local tmp_dir
+    local url
+
+    asset="$(neovim_release_asset)" || {
+        error "Unsupported architecture for user-local Neovim install: $(uname -m)"
+        exit 1
+    }
+
+    if [[ -x "$NEOVIM_INSTALL_DIR/bin/nvim" ]]; then
+        success "User-local Neovim already installed at $NEOVIM_INSTALL_DIR"
+    else
+        if [[ -e "$NEOVIM_INSTALL_DIR" ]]; then
+            warn "Existing incomplete Neovim install found. Backing up..."
+            mv "$NEOVIM_INSTALL_DIR" "$NEOVIM_INSTALL_DIR.bak.$(date +%Y%m%d%H%M%S)"
+        fi
+
+        info "Installing Neovim $NEOVIM_VERSION for current user..."
+        tmp_dir="$(mktemp -d)"
+        archive="$tmp_dir/$asset.tar.gz"
+        if [[ "$NEOVIM_VERSION" == "latest" ]]; then
+            url="https://github.com/neovim/neovim/releases/latest/download/$asset.tar.gz"
+        else
+            url="https://github.com/neovim/neovim/releases/download/$NEOVIM_VERSION/$asset.tar.gz"
+        fi
+
+        curl -fL "$url" -o "$archive"
+        tar -xzf "$archive" -C "$tmp_dir"
+        mkdir -p "$(dirname "$NEOVIM_INSTALL_DIR")"
+        mv "$tmp_dir/$asset" "$NEOVIM_INSTALL_DIR"
+    fi
+
+    mkdir -p "$LOCAL_BIN"
+    if [[ -e "$LOCAL_BIN/nvim" && ! -L "$LOCAL_BIN/nvim" ]]; then
+        warn "File '$LOCAL_BIN/nvim' exists. Backing up..."
+        mv "$LOCAL_BIN/nvim" "$LOCAL_BIN/nvim.bak.$(date +%Y%m%d%H%M%S)"
+    fi
+    ln -sfn "$NEOVIM_INSTALL_DIR/bin/nvim" "$LOCAL_BIN/nvim"
+    hash -r
+}
+
+ensure_neovim() {
+    local current_version
+
+    current_version="$(nvim_current_version || true)"
+    if version_at_least "$current_version" "$MIN_NVIM_VERSION"; then
+        success "Using Neovim $current_version at $(command -v nvim)"
+        return 0
+    fi
+
+    if [[ -n "$current_version" ]]; then
+        warn "Neovim $current_version is older than required $MIN_NVIM_VERSION."
+    else
+        warn "Neovim was not found."
+    fi
+
+    install_user_neovim
+
+    current_version="$(nvim_current_version || true)"
+    if ! version_at_least "$current_version" "$MIN_NVIM_VERSION"; then
+        error "Neovim $MIN_NVIM_VERSION or newer is required, but found '${current_version:-none}'."
+        exit 1
+    fi
+
+    success "Using Neovim $current_version at $(command -v nvim)"
 }
 
 configure_git_identity() {
@@ -281,6 +382,7 @@ print_final_notes() {
 
 check_required_tools
 verify_required_tools
+ensure_neovim
 configure_git_identity
 install_antidote
 deploy_configs

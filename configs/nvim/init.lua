@@ -26,6 +26,7 @@ end
 -- PLUGINS (Modern Lua Alternatives)
 -- ============================================================================
 local Plug = vim.fn['plug#']
+local has_nvim_010 = vim.fn.has('nvim-0.10') == 1
 vim.call('plug#begin')
 
 -- Git integration
@@ -37,8 +38,10 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 
 -- Navigation
-Plug 'nvim-tree/nvim-tree.lua'         -- Replaces NERDTree
-Plug 'nvim-tree/nvim-web-devicons'    -- Required for icons
+if has_nvim_010 then
+    Plug 'nvim-tree/nvim-tree.lua'         -- Replaces NERDTree
+    Plug 'nvim-tree/nvim-web-devicons'    -- Required for icons
+end
 Plug 'justinmk/vim-sneak'
 Plug 'easymotion/vim-easymotion'
 
@@ -99,7 +102,7 @@ end
 
 -- Nvim-Tree (Modern File Explorer)
 local has_nvim_tree, nvim_tree = pcall(require, 'nvim-tree')
-if has_nvim_tree then
+if has_nvim_010 and has_nvim_tree then
   nvim_tree.setup {
     view = { width = 30 },
     renderer = { group_empty = true },
@@ -119,4 +122,6 @@ vim.keymap.set('i', 'jj', '<Esc>', { noremap = true })
 vim.keymap.set('n', '<C-l>', ':nohl<CR><C-l>', { silent = true })
 
 -- NvimTree Toggle
-vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { noremap = true })
+if has_nvim_010 then
+    vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { noremap = true })
+end

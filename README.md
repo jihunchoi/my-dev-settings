@@ -38,7 +38,7 @@ Designed for Ubuntu / WSL and shared-server environments. The script configures 
     chmod +x setup_linux.sh
     ./setup_linux.sh
     ```
-3.  Follow the prompts. Any package installation, login-shell change, or SSH handoff change requires confirmation.
+3.  Follow the prompts. Any package installation, login-shell change, or SSH handoff change requires confirmation. If the system Neovim is older than `0.10`, the script installs the latest stable Neovim under `~/.local` for the current user.
 4.  Optional: start Zsh for the current session:
     ```bash
     exec zsh -l

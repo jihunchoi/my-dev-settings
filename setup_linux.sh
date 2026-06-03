@@ -173,6 +173,65 @@ install_neovim_plugins() {
     fi
 }
 
+has_local_passwd_entry() {
+    awk -F: -v user="$USER" '$1 == user { found = 1 } END { exit found ? 0 : 1 }' /etc/passwd
+}
+
+shell_handoff_file() {
+    if [[ -f "$HOME/.bash_profile" ]]; then
+        echo "$HOME/.bash_profile"
+    elif [[ -f "$HOME/.bash_login" ]]; then
+        echo "$HOME/.bash_login"
+    else
+        echo "$HOME/.profile"
+    fi
+}
+
+install_shell_handoff() {
+    local profile_file
+    local marker_start="# >>> my-dev-settings zsh handoff >>>"
+    local marker_end="# <<< my-dev-settings zsh handoff <<<"
+
+    profile_file="$(shell_handoff_file)"
+
+    echo
+    echo "This adds a per-user interactive login handoff to:"
+    echo "  $profile_file"
+    echo "It does not change /etc/passwd or the server login-shell database."
+    read -r -p "Start zsh automatically for future interactive SSH logins? [y/N] " answer
+
+    if [[ ! "$answer" =~ ^[Yy]$ ]]; then
+        echo "Start zsh for the current session with:"
+        echo "  exec zsh -l"
+        return 0
+    fi
+
+    if [[ -f "$profile_file" ]] && grep -Fqx "$marker_start" "$profile_file"; then
+        success "Zsh handoff is already configured in $profile_file"
+        return 0
+    fi
+
+    if [[ -f "$profile_file" ]]; then
+        warn "File '$profile_file' exists. Backing up..."
+        cp "$profile_file" "$profile_file.bak.$(date +%Y%m%d%H%M%S)"
+    fi
+
+    mkdir -p "$(dirname "$profile_file")"
+    {
+        echo
+        echo "$marker_start"
+        echo '_my_dev_settings_zsh="$(command -v zsh 2>/dev/null)"'
+        echo 'if [ -n "$PS1" ] && [ -z "${ZSH_VERSION:-}" ] && [ -z "${MY_DEV_SETTINGS_ZSH_HANDOFF:-}" ] && [ -n "$_my_dev_settings_zsh" ]; then'
+        echo '    export MY_DEV_SETTINGS_ZSH_HANDOFF=1'
+        echo '    exec "$_my_dev_settings_zsh" -l'
+        echo 'fi'
+        echo 'unset _my_dev_settings_zsh'
+        echo "$marker_end"
+    } >> "$profile_file"
+
+    success "Configured zsh handoff in $profile_file"
+}
+
 configure_default_shell() {
     local zsh_path
 
@@ -185,6 +244,14 @@ configure_default_shell() {
     echo
     echo "Changing the login shell affects only user '$USER', but updates the server account database."
     echo "On key-only SSH accounts, plain chsh often fails because it asks for the account password."
+
+    if ! has_local_passwd_entry; then
+        warn "User '$USER' is not present in /etc/passwd; sudo chsh cannot update this account."
+        echo "This is common on Google Compute Engine when OS Login or external identity mapping provides the user."
+        install_shell_handoff
+        return 0
+    fi
+
     read -r -p "Make zsh your default login shell with sudo chsh? [y/N] " answer
 
     if [[ "$answer" =~ ^[Yy]$ ]]; then
@@ -202,11 +269,7 @@ configure_default_shell() {
         warn "Default login shell was not changed."
     fi
 
-    echo "Start zsh for the current session with:"
-    echo "  exec zsh -l"
-    echo
-    echo "To try again later, run:"
-    echo "  sudo chsh -s \"$zsh_path\" \"$USER\""
+    install_shell_handoff
 }
 
 print_final_notes() {

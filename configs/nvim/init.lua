@@ -42,14 +42,16 @@ vim.opt.termguicolors = true
 -- Clipboard: OSC 52 for both copy and paste (host clipboard over SSH / nested terminals).
 -- Requires the terminal to allow OSC 52 read (e.g. iTerm2: Settings → General → Selection →
 -- "Applications in terminal may access clipboard"). Tmux needs `set -g set-clipboard on`.
-local osc52 = require('vim.ui.clipboard.osc52')
-vim.g.clipboard = {
-    name = 'osc52',
-    copy = { ['+'] = osc52.copy('+'), ['*'] = osc52.copy('*') },
-    paste = { ['+'] = osc52.paste('+'), ['*'] = osc52.paste('*') },
-}
+local has_osc52, osc52 = pcall(require, 'vim.ui.clipboard.osc52')
+if has_osc52 then
+    vim.g.clipboard = {
+        name = 'osc52',
+        copy = { ['+'] = osc52.copy('+'), ['*'] = osc52.copy('*') },
+        paste = { ['+'] = osc52.paste('+'), ['*'] = osc52.paste('*') },
+    }
+end
 vim.opt.background = 'light'
-vim.cmd('colorscheme solarized')
+pcall(vim.cmd, 'colorscheme solarized')
 
 -- Indentation
 vim.opt.expandtab = true
@@ -67,21 +69,27 @@ vim.opt.hlsearch = true
 -- ============================================================================
 
 -- Lualine (Modern Statusline)
-require('lualine').setup {
-  options = {
-    theme = 'solarized_light',
-    icons_enabled = true,
-    component_separators = '|',
-    section_separators = '',
+local has_lualine, lualine = pcall(require, 'lualine')
+if has_lualine then
+  lualine.setup {
+    options = {
+      theme = 'solarized_light',
+      icons_enabled = true,
+      component_separators = '|',
+      section_separators = '',
+    }
   }
-}
+end
 
 -- Nvim-Tree (Modern File Explorer)
-require('nvim-tree').setup {
-  view = { width = 30 },
-  renderer = { group_empty = true },
-  filters = { dotfiles = false },
-}
+local has_nvim_tree, nvim_tree = pcall(require, 'nvim-tree')
+if has_nvim_tree then
+  nvim_tree.setup {
+    view = { width = 30 },
+    renderer = { group_empty = true },
+    filters = { dotfiles = false },
+  }
+end
 
 -- ============================================================================
 -- KEY MAPPINGS

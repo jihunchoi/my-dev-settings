@@ -1,6 +1,20 @@
 # Antidote
-source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
-antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.txt
+for _antidote_file in \
+    /opt/homebrew/opt/antidote/share/antidote/antidote.zsh \
+    /usr/local/opt/antidote/share/antidote/antidote.zsh \
+    "$HOME/.local/share/antidote/antidote.zsh"; do
+    if [[ -r "$_antidote_file" ]]; then
+        source "$_antidote_file"
+        break
+    fi
+done
+unset _antidote_file
+
+if command -v antidote >/dev/null 2>&1; then
+    antidote load ${ZDOTDIR:-$HOME}/.zsh_plugins.txt
+else
+    print -u2 "[WARN] Antidote not found; skipping zsh plugins."
+fi
 
 # Aliases
 alias rm='rm -i'
@@ -10,7 +24,14 @@ alias vim='nvim'
 alias vi='nvim'
 
 # Plugins
-source <(fzf --zsh)
+if command -v fzf >/dev/null 2>&1; then
+    if fzf --zsh >/dev/null 2>&1; then
+        source <(fzf --zsh)
+    else
+        [[ -r /usr/share/doc/fzf/examples/key-bindings.zsh ]] && source /usr/share/doc/fzf/examples/key-bindings.zsh
+        [[ -r /usr/share/doc/fzf/examples/completion.zsh ]] && source /usr/share/doc/fzf/examples/completion.zsh
+    fi
+fi
 
 # PATH
 export PATH="$HOME/.local/bin:$PATH"

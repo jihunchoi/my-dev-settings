@@ -4,12 +4,15 @@
 # MACOS ENVIRONMENT INITIALIZER
 # =============================================================================
 
+set -e
+
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_SRC="$REPO_DIR/configs"
 
 info() { echo -e "\033[1;34m[INFO]\033[0m $1"; }
 success() { echo -e "\033[1;32m[SUCCESS]\033[0m $1"; }
 warn() { echo -e "\033[1;33m[WARN]\033[0m $1"; }
+error() { echo -e "\033[1;31m[ERROR]\033[0m $1"; }
 
 # Helper: Deploys files with backup logic
 safe_copy() {
@@ -34,7 +37,17 @@ info "Configuring Git..."
 # --- 2. Homebrew & Tools ---
 info "Checking Homebrew..."
 command -v brew &> /dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || eval "$(/usr/local/bin/brew shellenv)"
+
+if command -v brew >/dev/null 2>&1; then
+    eval "$(brew shellenv)"
+elif [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+else
+    error "Homebrew was not found after installation."
+    exit 1
+fi
 
 info "Installing tools & Hack Nerd Font..."
 brew install git zsh neovim tmux fzf antidote
@@ -57,6 +70,6 @@ info "Setting Zsh as default..."
 [[ "$SHELL" != "$(which zsh)" ]] && sudo chsh -s "$(which zsh)" "$USER"
 
 info "Running Neovim PlugInstall..."
-nvim --headless +PlugInstall +qa
+nvim --headless +'PlugInstall --sync' +qa
 
 success "Setup Complete! Restart iTerm2 to enjoy the slants."

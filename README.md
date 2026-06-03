@@ -30,7 +30,15 @@ Regardless of the OS, the following environment settings are **required** for th
     ```
 
 ### Linux / WSL
-*Coming soon. The `configs/` directory is already structured for immediate reuse once a `setup_linux.sh` is created.*
+Designed for Ubuntu / WSL and shared-server environments. The script configures the current user. If required tools are missing, it asks before using `sudo apt`; if Zsh is not the default shell, it asks before running user-level `chsh`.
+
+1.  Configure your SSH client / local terminal app to use **Hack Nerd Font**. Nothing needs to be installed on the server for font rendering.
+2.  Run the initializer:
+    ```bash
+    chmod +x setup_linux.sh
+    ./setup_linux.sh
+    ```
+3.  Follow the prompts. Any package installation or default-shell change requires confirmation.
 
 ---
 
@@ -69,3 +77,4 @@ Regardless of the OS, the following environment settings are **required** for th
 * `configs/tmux/`: Tmux logic and status line styling.
 * `configs/zsh/`: Shell environment and plugin lists.
 * `setup_macos.sh`: Automated bootstrap script for Mac.
+* `setup_linux.sh`: User-scoped Ubuntu / WSL bootstrap script.

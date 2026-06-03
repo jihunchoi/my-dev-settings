@@ -8,7 +8,10 @@ set -e
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_SRC="$REPO_DIR/configs"
-ANTIDOTE_DIR="$HOME/.local/share/antidote"
+ZDOTDIR="${ZDOTDIR:-$HOME}"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+ANTIDOTE_DIR="${ANTIDOTE_HOME:-$XDG_DATA_HOME/antidote}"
 
 info() { echo -e "\033[1;34m[INFO]\033[0m $1"; }
 success() { echo -e "\033[1;32m[SUCCESS]\033[0m $1"; }
@@ -129,11 +132,11 @@ install_antidote() {
 
 deploy_configs() {
     info "Deploying tool configurations..."
-    safe_copy "$CONFIG_SRC/zsh/zshrc" "$HOME/.zshrc"
-    safe_copy "$CONFIG_SRC/zsh/zsh_plugins.txt" "$HOME/.zsh_plugins.txt"
+    safe_copy "$CONFIG_SRC/zsh/zshrc" "$ZDOTDIR/.zshrc"
+    safe_copy "$CONFIG_SRC/zsh/zsh_plugins.txt" "$ZDOTDIR/.zsh_plugins.txt"
     safe_copy "$CONFIG_SRC/tmux/tmux.conf" "$HOME/.tmux.conf"
     safe_copy "$CONFIG_SRC/tmux/tmux-status.conf" "$HOME/.tmux-status.conf"
-    safe_copy "$CONFIG_SRC/nvim/init.lua" "$HOME/.config/nvim/init.lua"
+    safe_copy "$CONFIG_SRC/nvim/init.lua" "$XDG_CONFIG_HOME/nvim/init.lua"
 }
 
 install_neovim_plugins() {

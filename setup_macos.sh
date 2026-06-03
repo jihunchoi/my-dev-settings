@@ -67,6 +67,40 @@ install_antidote() {
     success "Installed Antidote at $ANTIDOTE_DIR"
 }
 
+install_neovim_plugins() {
+    local plugin_home="$XDG_DATA_HOME/nvim/plugged"
+    local expected_plugins=(
+        vim-fugitive
+        vim-repeat
+        vim-commentary
+        vim-surround
+        nvim-tree.lua
+        nvim-web-devicons
+        vim-sneak
+        vim-easymotion
+        solarized.nvim
+        lualine.nvim
+    )
+    local missing_plugins=()
+    local plugin
+
+    info "Running Neovim PlugInstall..."
+    nvim --headless +'PlugInstall --sync' +qa
+
+    for plugin in "${expected_plugins[@]}"; do
+        if [[ ! -d "$plugin_home/$plugin" ]]; then
+            missing_plugins+=("$plugin")
+        fi
+    done
+
+    if [[ ${#missing_plugins[@]} -gt 0 ]]; then
+        error "Neovim plugin installation did not complete: ${missing_plugins[*]}"
+        echo "Try rerunning:"
+        echo "  nvim --headless +'PlugInstall --sync' +qa"
+        exit 1
+    fi
+}
+
 # --- 1. Git Identity ---
 info "Configuring Git..."
 [[ -z "$(git config --global user.name)" ]] && read -p "Name: " n && git config --global user.name "$n"
@@ -110,7 +144,6 @@ info "Setting Zsh as default..."
 ZSH_PATH="$(command -v zsh)"
 [[ "$SHELL" != "$ZSH_PATH" ]] && sudo chsh -s "$ZSH_PATH" "$USER"
 
-info "Running Neovim PlugInstall..."
-nvim --headless +'PlugInstall --sync' +qa
+install_neovim_plugins
 
 success "Setup Complete! Restart iTerm2 to enjoy the slants."

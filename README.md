@@ -30,7 +30,7 @@ Regardless of the OS, the following environment settings are **required** for th
     ```
 
 ### Linux / WSL
-Designed for Ubuntu / WSL and shared-server environments. The script configures the current user. If required tools are missing, it asks before using `sudo apt`; if Zsh is not the default shell, it asks before running user-level `chsh`.
+Designed for Ubuntu / WSL and shared-server environments. The script configures the current user. If required tools are missing, it asks before using `sudo apt`; if Zsh is not the default shell, it asks before using `sudo chsh` for the current user.
 
 1.  Configure your SSH client / local terminal app to use **Hack Nerd Font**. Nothing needs to be installed on the server for font rendering.
 2.  Run the initializer:
@@ -38,7 +38,11 @@ Designed for Ubuntu / WSL and shared-server environments. The script configures 
     chmod +x setup_linux.sh
     ./setup_linux.sh
     ```
-3.  Follow the prompts. Any package installation or default-shell change requires confirmation.
+3.  Follow the prompts. Any package installation or login-shell change requires confirmation.
+4.  Optional: start Zsh for the current session:
+    ```bash
+    exec zsh -l
+    ```
 
 ---
 

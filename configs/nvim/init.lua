@@ -3,7 +3,23 @@
 -- ============================================================================
 local plug_path = vim.fn.stdpath('data') .. '/site/autoload/plug.vim'
 if vim.fn.empty(vim.fn.glob(plug_path)) > 0 then
-    vim.fn.system({'curl', '-fLo', plug_path, '--create-dirs', 'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'})
+    vim.fn.mkdir(vim.fn.fnamemodify(plug_path, ':h'), 'p')
+    local plug_result = vim.fn.system({
+        'curl',
+        '-fLo',
+        plug_path,
+        'https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    })
+    if vim.v.shell_error ~= 0 then
+        vim.api.nvim_err_writeln('Failed to install vim-plug: ' .. plug_result)
+        return
+    end
+end
+
+vim.cmd('source ' .. vim.fn.fnameescape(plug_path))
+if vim.fn.exists('*plug#begin') == 0 then
+    vim.api.nvim_err_writeln('vim-plug failed to load from ' .. plug_path)
+    return
 end
 
 -- ============================================================================

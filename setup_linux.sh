@@ -140,8 +140,37 @@ deploy_configs() {
 }
 
 install_neovim_plugins() {
+    local plugin_home="$XDG_DATA_HOME/nvim/plugged"
+    local expected_plugins=(
+        vim-fugitive
+        vim-repeat
+        vim-commentary
+        vim-surround
+        nvim-tree.lua
+        nvim-web-devicons
+        vim-sneak
+        vim-easymotion
+        solarized.nvim
+        lualine.nvim
+    )
+    local missing_plugins=()
+    local plugin
+
     info "Running Neovim PlugInstall..."
     nvim --headless +'PlugInstall --sync' +qa
+
+    for plugin in "${expected_plugins[@]}"; do
+        if [[ ! -d "$plugin_home/$plugin" ]]; then
+            missing_plugins+=("$plugin")
+        fi
+    done
+
+    if [[ ${#missing_plugins[@]} -gt 0 ]]; then
+        error "Neovim plugin installation did not complete: ${missing_plugins[*]}"
+        echo "Try rerunning:"
+        echo "  nvim --headless +'PlugInstall --sync' +qa"
+        exit 1
+    fi
 }
 
 configure_default_shell() {
@@ -154,18 +183,30 @@ configure_default_shell() {
     fi
 
     echo
-    echo "Changing the default shell affects only user '$USER', but may be restricted by server policy."
-    read -r -p "Make zsh your default login shell with chsh? [y/N] " answer
+    echo "Changing the login shell affects only user '$USER', but updates the server account database."
+    echo "On key-only SSH accounts, plain chsh often fails because it asks for the account password."
+    read -r -p "Make zsh your default login shell with sudo chsh? [y/N] " answer
 
-    if [[ ! "$answer" =~ ^[Yy]$ ]]; then
-        return 0
+    if [[ "$answer" =~ ^[Yy]$ ]]; then
+        if [[ -r /etc/shells ]] && ! grep -qx "$zsh_path" /etc/shells; then
+            warn "$zsh_path is not listed in /etc/shells; chsh may be rejected."
+        fi
+
+        if sudo chsh -s "$zsh_path" "$USER"; then
+            success "Default shell changed to $zsh_path. Start a new login session for it to take effect."
+            return 0
+        fi
+
+        warn "sudo chsh failed. Default login shell was not changed."
+    else
+        warn "Default login shell was not changed."
     fi
 
-    if [[ -r /etc/shells ]] && ! grep -qx "$zsh_path" /etc/shells; then
-        warn "$zsh_path is not listed in /etc/shells; chsh may be rejected."
-    fi
-
-    chsh -s "$zsh_path"
+    echo "Start zsh for the current session with:"
+    echo "  exec zsh -l"
+    echo
+    echo "To try again later, run:"
+    echo "  sudo chsh -s \"$zsh_path\" \"$USER\""
 }
 
 print_final_notes() {

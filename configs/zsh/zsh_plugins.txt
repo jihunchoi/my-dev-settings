@@ -1,5 +1,6 @@
 getantidote/use-omz
 ohmyzsh/ohmyzsh path:lib
 ohmyzsh/ohmyzsh path:plugins/colored-man-pages
+rupa/z
 
 sindresorhus/pure

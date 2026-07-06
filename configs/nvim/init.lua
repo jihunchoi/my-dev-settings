@@ -106,7 +106,7 @@ if has_nvim_010 and has_nvim_tree then
   nvim_tree.setup {
     view = { width = 30 },
     renderer = { group_empty = true },
-    filters = { dotfiles = false },
+    filters = { dotfiles = false, git_ignored = false },
   }
 end
 

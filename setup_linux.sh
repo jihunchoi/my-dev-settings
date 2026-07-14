@@ -12,6 +12,8 @@ ZDOTDIR="${ZDOTDIR:-$HOME}"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 ANTIDOTE_DIR="${ANTIDOTE_HOME:-$XDG_DATA_HOME/antidote}"
+GIT_USER_NAME="Jihun Choi"
+GIT_USER_EMAIL="1898501+jihunchoi@users.noreply.github.com"
 LOCAL_BIN="$HOME/.local/bin"
 MIN_NVIM_VERSION="${MIN_NVIM_VERSION:-0.10.0}"
 NEOVIM_VERSION="${NEOVIM_VERSION:-latest}"
@@ -209,14 +211,8 @@ ensure_neovim() {
 
 configure_git_identity() {
     info "Configuring user Git identity..."
-    if [[ -z "$(git config --global user.name)" ]]; then
-        read -r -p "Name: " git_name
-        git config --global user.name "$git_name"
-    fi
-    if [[ -z "$(git config --global user.email)" ]]; then
-        read -r -p "Email: " git_email
-        git config --global user.email "$git_email"
-    fi
+    git config --global user.name "$GIT_USER_NAME"
+    git config --global user.email "$GIT_USER_EMAIL"
 }
 
 install_antidote() {

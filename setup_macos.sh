@@ -12,6 +12,8 @@ ZDOTDIR="${ZDOTDIR:-$HOME}"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
 ANTIDOTE_DIR="${ANTIDOTE_HOME:-$XDG_DATA_HOME/antidote}"
+GIT_USER_NAME="Jihun Choi"
+GIT_USER_EMAIL="1898501+jihunchoi@users.noreply.github.com"
 
 info() { echo -e "\033[1;34m[INFO]\033[0m $1"; }
 success() { echo -e "\033[1;32m[SUCCESS]\033[0m $1"; }
@@ -103,8 +105,8 @@ install_neovim_plugins() {
 
 # --- 1. Git Identity ---
 info "Configuring Git..."
-[[ -z "$(git config --global user.name)" ]] && read -p "Name: " n && git config --global user.name "$n"
-[[ -z "$(git config --global user.email)" ]] && read -p "Email: " e && git config --global user.email "$e"
+git config --global user.name "$GIT_USER_NAME"
+git config --global user.email "$GIT_USER_EMAIL"
 
 # --- 2. Homebrew & Tools ---
 info "Checking Homebrew..."

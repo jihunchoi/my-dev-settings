@@ -35,6 +35,28 @@ safe_copy() {
     success "Deployed $dest"
 }
 
+deploy_ghostty_config() {
+    local managed_config="$XDG_CONFIG_HOME/ghostty/my-dev-settings.conf"
+    # The legacy filename is supported by both older and newer Ghostty versions.
+    local user_config="$HOME/Library/Application Support/com.mitchellh.ghostty/config"
+    local include_line="config-file = \"$managed_config\""
+
+    safe_copy "$CONFIG_SRC/ghostty/config" "$managed_config"
+
+    if [[ -f "$user_config" ]] && grep -Fxq "$include_line" "$user_config"; then
+        success "Ghostty already includes the shared configuration."
+        return 0
+    fi
+
+    mkdir -p "$(dirname "$user_config")"
+    if [[ -f "$user_config" ]]; then
+        warn "Backing up existing Ghostty config before adding the shared settings."
+        cp -p "$user_config" "$user_config.bak.$(date +%Y%m%d%H%M%S)"
+    fi
+    printf '\n# Shared terminal settings from my-dev-settings\n%s\n' "$include_line" >> "$user_config"
+    success "Added shared Ghostty settings to $user_config"
+}
+
 find_brew() {
     local brew_bin
 
@@ -134,6 +156,7 @@ safe_copy "$CONFIG_SRC/zsh/zsh_plugins.txt" "$ZDOTDIR/.zsh_plugins.txt"
 safe_copy "$CONFIG_SRC/tmux/tmux.conf" "$HOME/.tmux.conf"
 safe_copy "$CONFIG_SRC/tmux/tmux-status.conf" "$HOME/.tmux-status.conf"
 safe_copy "$CONFIG_SRC/nvim/init.lua" "$XDG_CONFIG_HOME/nvim/init.lua"
+deploy_ghostty_config
 
 # --- 4. MacOS Specific Fixes ---
 info "Disabling accent menu (Long-press fix)..."
@@ -147,3 +170,4 @@ ZSH_PATH="$(command -v zsh)"
 install_neovim_plugins
 
 success "Setup Complete! Open a new terminal session to use the configuration."
+info "In Ghostty, press Cmd+Shift+, to reload its configuration."

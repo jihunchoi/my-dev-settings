@@ -1,0 +1,4 @@
+# Use the left Option key for tmux's Alt+h/j/k/l pane navigation.
+macos-option-as-alt = left
+
+# Font and theme are intentionally left to Ghostty's defaults or personal config.

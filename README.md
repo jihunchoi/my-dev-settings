@@ -27,17 +27,14 @@ Neovim leaves `background` unset so its terminal UI can detect light/dark appear
 ### macOS (Ghostty or iTerm2)
 1.  Install [Ghostty](https://ghostty.org/) or [iTerm2](https://iterm2.com/).
 2.  Configure the Option key:
-    * **Ghostty**: Open its configuration with `Cmd + ,` and add:
-        ```ini
-        macos-option-as-alt = left
-        ```
-        Leave `font-family` unset to use Ghostty's bundled font and glyph support. Leave `theme` unset to use Ghostty's default, or choose any theme you like. See Ghostty's [configuration guide](https://ghostty.org/docs/config) and [Option key reference](https://ghostty.org/docs/config/reference#macos-option-as-alt). The bootstrap script does not deploy a Ghostty config or install fonts.
+    * **Ghostty**: The initializer sets `macos-option-as-alt = left` automatically. It installs `configs/ghostty/config` as `$XDG_CONFIG_HOME/ghostty/my-dev-settings.conf` (default: `~/.config/ghostty/my-dev-settings.conf`) and includes it from `~/Library/Application Support/com.mitchellh.ghostty/config`. Existing config content is preserved and backed up before adding the include; rerunning does not duplicate it. The shared file controls the left Option key; font and theme choices remain in your personal config. Leave `font-family` and `theme` unset to use Ghostty's defaults. No fonts are installed. See Ghostty's [configuration guide](https://ghostty.org/docs/config) and [Option key reference](https://ghostty.org/docs/config/reference#macos-option-as-alt).
     * **iTerm2**: In **Profiles > Keys**, set **Left Option Key** to `Esc+`. If file icons are missing, choose a Nerd Font of your choice.
 3.  Run the initializer:
     ```bash
     chmod +x setup_macos.sh
     ./setup_macos.sh
     ```
+4.  In Ghostty, reload its configuration with `Cmd + Shift + ,` (or restart Ghostty).
 
 ### Apply appearance changes to an existing installation
 
@@ -106,6 +103,7 @@ Designed for Ubuntu / WSL and shared-server environments. The script configures 
 ---
 
 ## 📂 Structure
+* `configs/ghostty/`: Shared Ghostty settings deployed by the macOS initializer.
 * `configs/nvim/`: Neovim Lua configurations.
 * `configs/tmux/`: Tmux logic and status line styling.
 * `configs/zsh/`: Shell environment and plugin lists.

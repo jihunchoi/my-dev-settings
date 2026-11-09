@@ -11,7 +11,9 @@ CONFIG_SRC="$REPO_DIR/configs"
 ZDOTDIR="${ZDOTDIR:-$HOME}"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
-ANTIDOTE_DIR="${ANTIDOTE_HOME:-$XDG_DATA_HOME/antidote}"
+ZIM_HOME="${ZIM_HOME:-$XDG_DATA_HOME/zim}"
+ZIM_CONFIG_FILE="${ZIM_CONFIG_FILE:-$ZDOTDIR/.zimrc}"
+ZIM_VERSION="${ZIM_VERSION:-v1.20.2}"
 GIT_USER_NAME="Jihun Choi"
 GIT_USER_EMAIL="1898501+jihunchoi@users.noreply.github.com"
 
@@ -79,17 +81,7 @@ find_brew() {
     return 1
 }
 
-install_antidote() {
-    if [[ -f "$ANTIDOTE_DIR/antidote.zsh" ]]; then
-        success "Antidote already installed at $ANTIDOTE_DIR"
-        return 0
-    fi
-
-    info "Installing Antidote for current user..."
-    mkdir -p "$(dirname "$ANTIDOTE_DIR")"
-    git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
-    success "Installed Antidote at $ANTIDOTE_DIR"
-}
+source "$REPO_DIR/scripts/setup_zim.sh"
 
 install_neovim_plugins() {
     local plugin_home="$XDG_DATA_HOME/nvim/plugged"
@@ -147,16 +139,17 @@ eval "$("$BREW_BIN" shellenv)"
 info "Installing tools..."
 brew install git zsh neovim tmux fzf
 
-install_antidote
+install_zim
 
 # --- 3. Deploy Configs ---
 info "Deploying tool configurations..."
 safe_copy "$CONFIG_SRC/zsh/zshrc" "$ZDOTDIR/.zshrc"
-safe_copy "$CONFIG_SRC/zsh/zsh_plugins.txt" "$ZDOTDIR/.zsh_plugins.txt"
+safe_copy "$CONFIG_SRC/zsh/zimrc" "$ZIM_CONFIG_FILE"
 safe_copy "$CONFIG_SRC/tmux/tmux.conf" "$HOME/.tmux.conf"
 safe_copy "$CONFIG_SRC/tmux/tmux-status.conf" "$HOME/.tmux-status.conf"
 safe_copy "$CONFIG_SRC/nvim/init.lua" "$XDG_CONFIG_HOME/nvim/init.lua"
 deploy_ghostty_config
+install_zim_modules
 
 # --- 4. MacOS Specific Fixes ---
 info "Disabling accent menu (Long-press fix)..."

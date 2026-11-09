@@ -1,0 +1,11 @@
+# Shell defaults, keybindings, and terminal-palette colors for ls/grep/less.
+zmodule environment
+zmodule input
+zmodule utility
+
+# Initialize completion after any modules that add completion definitions.
+zmodule completion
+
+# Keep the existing directory jumper and prompt.
+zmodule rupa/z --source z.sh
+zmodule sindresorhus/pure --source async.zsh --source pure.zsh

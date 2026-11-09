@@ -11,7 +11,9 @@ CONFIG_SRC="$REPO_DIR/configs"
 ZDOTDIR="${ZDOTDIR:-$HOME}"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
-ANTIDOTE_DIR="${ANTIDOTE_HOME:-$XDG_DATA_HOME/antidote}"
+ZIM_HOME="${ZIM_HOME:-$XDG_DATA_HOME/zim}"
+ZIM_CONFIG_FILE="${ZIM_CONFIG_FILE:-$ZDOTDIR/.zimrc}"
+ZIM_VERSION="${ZIM_VERSION:-v1.20.2}"
 GIT_USER_NAME="Jihun Choi"
 GIT_USER_EMAIL="1898501+jihunchoi@users.noreply.github.com"
 LOCAL_BIN="$HOME/.local/bin"
@@ -215,22 +217,12 @@ configure_git_identity() {
     git config --global user.email "$GIT_USER_EMAIL"
 }
 
-install_antidote() {
-    if [[ -f "$ANTIDOTE_DIR/antidote.zsh" ]]; then
-        success "Antidote already installed at $ANTIDOTE_DIR"
-        return 0
-    fi
-
-    info "Installing Antidote for current user..."
-    mkdir -p "$(dirname "$ANTIDOTE_DIR")"
-    git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
-    success "Installed Antidote at $ANTIDOTE_DIR"
-}
+source "$REPO_DIR/scripts/setup_zim.sh"
 
 deploy_configs() {
     info "Deploying tool configurations..."
     safe_copy "$CONFIG_SRC/zsh/zshrc" "$ZDOTDIR/.zshrc"
-    safe_copy "$CONFIG_SRC/zsh/zsh_plugins.txt" "$ZDOTDIR/.zsh_plugins.txt"
+    safe_copy "$CONFIG_SRC/zsh/zimrc" "$ZIM_CONFIG_FILE"
     safe_copy "$CONFIG_SRC/tmux/tmux.conf" "$HOME/.tmux.conf"
     safe_copy "$CONFIG_SRC/tmux/tmux-status.conf" "$HOME/.tmux-status.conf"
     safe_copy "$CONFIG_SRC/nvim/init.lua" "$XDG_CONFIG_HOME/nvim/init.lua"
@@ -379,8 +371,9 @@ check_required_tools
 verify_required_tools
 ensure_neovim
 configure_git_identity
-install_antidote
+install_zim
 deploy_configs
+install_zim_modules
 install_neovim_plugins
 configure_default_shell
 print_final_notes

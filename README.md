@@ -72,6 +72,18 @@ Designed for Ubuntu / WSL and shared-server environments. The script configures 
 
 ---
 
+## Zsh configuration and migration
+
+Both setup scripts install [Zim](https://github.com/zimfw/zimfw) for the current user and deploy `configs/zsh/zimrc` as `${ZDOTDIR:-$HOME}/.zimrc`. The selected modules provide environment defaults, input keybindings, utility aliases/man-page colors, and completion. Pure, `rupa/z`, and fzf are retained. General helper aliases and completion styling follow Zim's defaults; the explicit `rm`/`mv`/`cp` confirmation aliases and `vim`/`vi` aliases remain.
+
+To migrate an existing installation, rerun the setup script for that machine, then open a new shell or run `exec zsh -l`. Changed `.zshrc` and `.zimrc` files are backed up automatically. The existing `~/.zsh_history` is reused. Antidote and its old `.zsh_plugins.txt` and caches are no longer loaded; the setup leaves those files in place.
+
+The manager is installed under `${XDG_DATA_HOME:-$HOME/.local/share}/zim`. New installations use release `v1.20.2`; set `ZIM_VERSION` to another release tag to select the initial download. Existing managers are reused. Use the same exported `ZIM_HOME` or `ZIM_CONFIG_FILE` overrides during setup and in your shell if you customize these paths.
+
+Zim modules are installed and `init.zsh` is generated during setup. Normal shell startup sources that generated file; after editing `.zimrc`, Zim initializes new modules and rebuilds it on the next startup. Run `zimfw list` to inspect modules, `zimfw update` to update them, and `zimfw upgrade` to upgrade the manager. Modules follow their upstream branches by default; use `--tag` in `.zimrc` to select a fixed release, or `--branch` to choose a different branch.
+
+---
+
 ## 📜 Cheat Sheet (Core & Advanced)
 
 ### TMUX (Prefix: `Ctrl + b`)
@@ -88,7 +100,6 @@ Designed for Ubuntu / WSL and shared-server environments. The script configures 
 | :--- | :--- |
 | **Exit Insert Mode** | `jj` |
 | **Toggle File Tree** | `Ctrl + n` |
-| **Fuzzy Find Files** | `Ctrl + t` |
 | **Sneak (2-char)** | `s` + `[char][char]` |
 | **EasyMotion (Word)** | `<Space><Space>w` |
 | **EasyMotion (Pattern)** | `<Space><Space>s` |
@@ -99,6 +110,7 @@ Designed for Ubuntu / WSL and shared-server environments. The script configures 
 | **Nvim-Tree** | Create / Delete / Rename | `a` / `d` / `r` |
 | **Nvim-Tree** | Cut / Open | `x` / `Enter` |
 | **Zsh Shell** | Fuzzy History Search | `Ctrl + r` |
+| **Zsh Shell** | Fuzzy File Picker (inserts a path into the command line) | `Ctrl + t` |
 
 ---
 
@@ -106,6 +118,7 @@ Designed for Ubuntu / WSL and shared-server environments. The script configures 
 * `configs/ghostty/`: Shared Ghostty settings deployed by the macOS initializer.
 * `configs/nvim/`: Neovim Lua configurations.
 * `configs/tmux/`: Tmux logic and status line styling.
-* `configs/zsh/`: Shell environment and plugin lists.
+* `configs/zsh/`: Shell environment and Zim module list.
+* `scripts/setup_zim.sh`: Shared user-scoped Zim bootstrap helpers.
 * `setup_macos.sh`: Automated bootstrap script for Mac.
 * `setup_linux.sh`: User-scoped Ubuntu / WSL bootstrap script.

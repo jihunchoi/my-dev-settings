@@ -1,6 +1,21 @@
 # 💻 My Dotfiles
 
-A portable development environment for **Neovim**, **Tmux**, and **Zsh** that uses your terminal's color palette. Choose any terminal theme, light or dark.
+A portable starter development environment with **Git**, **Neovim**, **Tmux**, **Zsh**, **fzf**, and **uv** for Python projects. The shell and editor use your terminal's color palette. Choose any terminal theme, light or dark.
+
+## Starter tools
+
+Both platform initializers install these tools and deploy the configurations below:
+
+| Tool | Purpose |
+| :--- | :--- |
+| Git | Version control |
+| Zsh + Zim + Pure | Interactive shell, completion, and prompt |
+| Neovim | Editing, file navigation, and Git integration |
+| Tmux | Persistent sessions and terminal panes |
+| fzf | Fuzzy history and file selection |
+| uv / uvx | Python versions, project environments, dependencies, and isolated command-line tools |
+
+Python versions and project dependencies are selected per project; the initializers install uv without downloading a Python runtime or global Python packages.
 
 ## 🏗 Environment Requirements
 Configure these settings in your local terminal, including when connecting to Linux / WSL:
@@ -64,11 +79,33 @@ Designed for Ubuntu / WSL and shared-server environments. The script configures 
     chmod +x setup_linux.sh
     ./setup_linux.sh
     ```
-3.  Follow the prompts. Any package installation, login-shell change, or SSH handoff change requires confirmation. If the system Neovim is older than `0.10`, the script installs the latest stable Neovim under `~/.local` for the current user.
+3.  Follow the prompts. System package installation, login-shell changes, and SSH handoff changes require confirmation. If the system Neovim is older than `0.10`, the script installs the latest stable Neovim under `~/.local` for the current user. If uv is missing, it installs uv and uvx in `~/.local/bin` without sudo.
 4.  Optional: start Zsh for the current session:
     ```bash
     exec zsh -l
     ```
+
+---
+
+## Python projects with uv
+
+On macOS, uv is installed through Homebrew. On Linux / WSL, setup reuses uv if it is already on `PATH`; otherwise it downloads Astral's standalone installer and installs it for the current user. The installer is configured to leave shell profiles alone, and the supplied Zsh configuration already includes `~/.local/bin` on `PATH`. See the official [installation guide](https://docs.astral.sh/uv/getting-started/installation/) and [installer options](https://docs.astral.sh/uv/reference/installer/).
+
+Start a project in a new terminal after setup. This example chooses Python 3.12; select the version your project supports:
+
+```bash
+uv --version
+uv init --python 3.12 my-project
+cd my-project
+uv add requests
+uv add --dev ruff
+uv run python -c 'import requests; print(requests.__version__)'
+uv run ruff check .
+```
+
+uv downloads the requested Python version if needed and manages the project's `.venv`. Commit `pyproject.toml`, `.python-version`, and `uv.lock`; keep `.venv` out of version control. For an existing uv project, run `uv sync --locked`, then use `uv run` to execute commands in its environment. See [Working on projects](https://docs.astral.sh/uv/guides/projects/).
+
+For an isolated command-line tool outside a project, use `uvx ruff check .`, or install it persistently with `uv tool install ruff`. Update Homebrew-managed uv with `brew upgrade uv`; for a standalone installation, use `uv self update`. If setup reused an existing installation, update it through its original installation method.
 
 ---
 

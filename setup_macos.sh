@@ -137,7 +137,8 @@ fi
 eval "$("$BREW_BIN" shellenv)"
 
 info "Installing tools..."
-brew install git zsh neovim tmux fzf
+brew install git zsh neovim tmux fzf uv
+uv --version
 
 install_zim
 

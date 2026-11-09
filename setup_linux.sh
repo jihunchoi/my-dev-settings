@@ -116,6 +116,39 @@ verify_required_tools() {
     fi
 }
 
+ensure_uv() {
+    local installer
+
+    if command -v uv >/dev/null 2>&1; then
+        info "Using existing uv at $(command -v uv)"
+        uv --version
+        return 0
+    fi
+
+    info "Installing uv for current user in $LOCAL_BIN..."
+    installer="$(mktemp)"
+    if ! curl -fsSL --retry 3 https://astral.sh/uv/install.sh -o "$installer"; then
+        rm -f "$installer"
+        error "Failed to download the uv installer. Rerun setup to retry."
+        return 1
+    fi
+
+    # Our Zsh config already adds ~/.local/bin; leave shell profiles alone.
+    if ! env UV_INSTALL_DIR="$LOCAL_BIN" UV_NO_MODIFY_PATH=1 sh "$installer"; then
+        rm -f "$installer"
+        error "uv installation failed. Rerun setup to retry."
+        return 1
+    fi
+    rm -f "$installer"
+    hash -r
+
+    if [[ ! -x "$LOCAL_BIN/uv" ]]; then
+        error "The uv installer did not create $LOCAL_BIN/uv."
+        return 1
+    fi
+    uv --version
+}
+
 nvim_current_version() {
     command -v nvim >/dev/null 2>&1 || return 1
     nvim --version | sed -n '1s/^NVIM v\([0-9][0-9.]*\).*/\1/p'
@@ -369,6 +402,7 @@ print_final_notes() {
 
 check_required_tools
 verify_required_tools
+ensure_uv
 ensure_neovim
 configure_git_identity
 install_zim

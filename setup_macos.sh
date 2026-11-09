@@ -80,7 +80,6 @@ install_neovim_plugins() {
         nvim-web-devicons
         vim-sneak
         vim-easymotion
-        solarized.nvim
         lualine.nvim
     )
     local missing_plugins=()
@@ -123,9 +122,8 @@ fi
 
 eval "$("$BREW_BIN" shellenv)"
 
-info "Installing tools & Hack Nerd Font..."
+info "Installing tools..."
 brew install git zsh neovim tmux fzf
-brew install --cask font-hack-nerd-font
 
 install_antidote
 
@@ -148,4 +146,4 @@ ZSH_PATH="$(command -v zsh)"
 
 install_neovim_plugins
 
-success "Setup Complete! Restart iTerm2 to enjoy the slants."
+success "Setup Complete! Open a new terminal session to use the configuration."

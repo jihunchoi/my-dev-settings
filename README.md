@@ -1,15 +1,19 @@
 # 💻 My Dotfiles
 
-A high-performance, portable development environment featuring a **Solarized Light** aesthetic for **Neovim**, **Tmux**, and **Zsh**.
+A portable development environment for **Neovim**, **Tmux**, and **Zsh** that uses your terminal's color palette. Choose any terminal theme, light or dark.
 
 ## 🏗 Environment Requirements
-Regardless of the OS, the following environment settings are **required** for the UI to render correctly:
+Configure these settings in your local terminal, including when connecting to Linux / WSL:
 
 ### 🖋 Appearance & Font
-* **Font**: **Hack Nerd Font** (Non-mono version). This is the secret to the seamless status line slants and file icons.
-* **Color Palette**: **Solarized Light**. 
-* **Glyphs**: Disable "Built-in Powerline Glyphs" in your terminal settings; let the Nerd Font handle the rendering.
-* **Unicode**: Set "Unicode Normalization Form" to **NFC**.
+* **Font**: Ghostty's default **JetBrains Mono** and built-in Nerd Font support cover Powerline glyphs and file icons; leave `font-family` unset. No extra font installation is needed. In other terminals, choose any font or fallback with the required glyph support. See Ghostty's [built-in Nerd Font support](https://ghostty.org/docs/install/release-notes/1-2-0#built-in-nerd-font-improvement).
+* **Color Palette**: Choose it in your terminal. No specific theme is required.
+* **Glyphs (iTerm2)**: If using a Nerd Font, you can disable "Built-in Powerline Glyphs" to let that font handle rendering.
+* **Unicode (iTerm2)**: Set "Unicode Normalization Form" to **NFC**.
+
+Tmux's status bar uses the terminal's default foreground/background and reverse video for emphasis. Neovim uses its bundled `vim` colorscheme (legacy defaults on versions before 0.10) with `termguicolors` disabled, so it inherits the terminal's default foreground/background and uses indexed syntax colors. Lualine reuses Neovim's statusline highlights. Zsh's Pure prompt already uses terminal palette colors.
+
+Neovim leaves `background` unset so its terminal UI can detect light/dark appearance. If detection fails (for example, through an older tmux or SSH setup), use `:set background=light` or `:set background=dark`. Some built-in highlights and plugins use extended 256-color entries, so changing a terminal theme need not recolor every accent. This trades independent RGB editor colors for terminal palette integration; to use an RGB colorscheme later, enable `termguicolors` and load that scheme.
 
 ### ⌨️ Key Mapping Essentials
 * **Leader Key**: `Space`
@@ -20,19 +24,44 @@ Regardless of the OS, the following environment settings are **required** for th
 
 ## 🚀 Installation & Platform Setup
 
-### macOS (iTerm2)
-1.  Install [iTerm2](https://iterm2.com/).
-2.  In **Profiles > Keys**, set **Left Option Key** to `Esc+`.
+### macOS (Ghostty or iTerm2)
+1.  Install [Ghostty](https://ghostty.org/) or [iTerm2](https://iterm2.com/).
+2.  Configure the Option key:
+    * **Ghostty**: Open its configuration with `Cmd + ,` and add:
+        ```ini
+        macos-option-as-alt = left
+        ```
+        Leave `font-family` unset to use Ghostty's bundled font and glyph support. Leave `theme` unset to use Ghostty's default, or choose any theme you like. See Ghostty's [configuration guide](https://ghostty.org/docs/config) and [Option key reference](https://ghostty.org/docs/config/reference#macos-option-as-alt). The bootstrap script does not deploy a Ghostty config or install fonts.
+    * **iTerm2**: In **Profiles > Keys**, set **Left Option Key** to `Esc+`. If file icons are missing, choose a Nerd Font of your choice.
 3.  Run the initializer:
     ```bash
     chmod +x setup_macos.sh
     ./setup_macos.sh
     ```
 
+### Apply appearance changes to an existing installation
+
+The bootstrap scripts copy files rather than symlinking them. To update only the appearance settings, run these commands from this repository (they back up existing installed files):
+
+```bash
+(
+    nvim_config="${XDG_CONFIG_HOME:-$HOME/.config}/nvim/init.lua"
+    backup_suffix="bak.$(date +%Y%m%d%H%M%S)"
+    mkdir -p "$(dirname "$nvim_config")"
+    [ ! -f "$nvim_config" ] || cp -p "$nvim_config" "$nvim_config.$backup_suffix"
+    [ ! -f "$HOME/.tmux-status.conf" ] || cp -p "$HOME/.tmux-status.conf" "$HOME/.tmux-status.conf.$backup_suffix"
+    cp configs/nvim/init.lua "$nvim_config"
+    cp configs/tmux/tmux-status.conf "$HOME/.tmux-status.conf"
+)
+tmux source-file "$HOME/.tmux-status.conf"  # If a tmux server is running
+```
+
+Restart Neovim after copying. The old Solarized plugin can remain installed without being used; `:PlugClean` can remove unused plugins after you review its list.
+
 ### Linux / WSL
 Designed for Ubuntu / WSL and shared-server environments. The script configures the current user. If required tools are missing, it asks before using `sudo apt`; if Zsh is not the default shell, it uses `sudo chsh` only for local `/etc/passwd` users and otherwise offers a per-user interactive SSH handoff.
 
-1.  Configure your SSH client / local terminal app to use **Hack Nerd Font**. Nothing needs to be installed on the server for font rendering.
+1.  Use Ghostty's default font support, or configure your local terminal with a font or fallback that supports the icons you use. Nothing needs to be installed on the server for font rendering.
 2.  Run the initializer:
     ```bash
     chmod +x setup_linux.sh

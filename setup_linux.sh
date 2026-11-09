@@ -247,7 +247,6 @@ install_neovim_plugins() {
         nvim-web-devicons
         vim-sneak
         vim-easymotion
-        solarized.nvim
         lualine.nvim
     )
     local missing_plugins=()
@@ -373,7 +372,7 @@ print_final_notes() {
     success "Setup Complete!"
     echo
     echo "No global font settings were changed."
-    echo "Configure Hack Nerd Font in your local terminal client for correct icons and slants."
+    echo "Ghostty includes font and icon support; other local terminal clients may need a Nerd Font."
 }
 
 check_required_tools

@@ -46,7 +46,6 @@ Plug 'justinmk/vim-sneak'
 Plug 'easymotion/vim-easymotion'
 
 -- Appearance
-Plug 'shaunsingh/solarized.nvim'
 Plug 'nvim-lualine/lualine.nvim'
 
 vim.call('plug#end')
@@ -56,7 +55,13 @@ vim.call('plug#end')
 -- ============================================================================
 vim.opt.number = true
 vim.opt.clipboard = 'unnamedplus'
-vim.opt.termguicolors = true
+-- Use terminal palette colors instead of a separate RGB palette.
+vim.opt.termguicolors = false
+-- Neovim 0.10+ ships Vim's palette-based scheme; older versions use default.
+if has_nvim_010 then
+    vim.cmd('colorscheme vim')
+end
+-- Leave 'background' unset so the terminal UI can detect light/dark appearance.
 
 -- Clipboard: OSC 52 for both copy and paste (host clipboard over SSH / nested terminals).
 -- Requires the terminal to allow OSC 52 read (e.g. iTerm2: Settings → General → Selection →
@@ -69,8 +74,6 @@ if has_osc52 then
         paste = { ['+'] = osc52.paste('+'), ['*'] = osc52.paste('*') },
     }
 end
-vim.opt.background = 'light'
-pcall(vim.cmd, 'colorscheme solarized')
 
 -- Indentation
 vim.opt.expandtab = true
@@ -92,7 +95,11 @@ local has_lualine, lualine = pcall(require, 'lualine')
 if has_lualine then
   lualine.setup {
     options = {
-      theme = 'solarized_light',
+      -- Reuse editor highlights without introducing a statusline color palette.
+      theme = {
+        normal = { a = 'StatusLine', b = 'StatusLine', c = 'StatusLine' },
+        inactive = { a = 'StatusLineNC', b = 'StatusLineNC', c = 'StatusLineNC' },
+      },
       icons_enabled = true,
       component_separators = '|',
       section_separators = '',

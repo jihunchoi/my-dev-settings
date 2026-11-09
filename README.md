@@ -114,6 +114,7 @@ Zim modules are installed and `init.zsh` is generated during setup. Normal shell
 | **Nvim-Tree** | Create / Delete / Rename | `a` / `d` / `r` |
 | **Nvim-Tree** | Cut / Open | `x` / `Enter` |
 | **Zsh Shell** | Fuzzy History Search | `Ctrl + r` |
+| **Zsh Shell** | Search history matching the typed command prefix | `Up` / `Down` |
 | **Zsh Shell** | Fuzzy File Picker (inserts a path into the command line) | `Ctrl + t` |
 
 ---

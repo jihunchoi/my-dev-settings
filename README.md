@@ -11,7 +11,7 @@ Configure these settings in your local terminal, including when connecting to Li
 * **Glyphs (iTerm2)**: If using a Nerd Font, you can disable "Built-in Powerline Glyphs" to let that font handle rendering.
 * **Unicode (iTerm2)**: Set "Unicode Normalization Form" to **NFC**.
 
-Tmux's status bar uses the terminal's default foreground/background and reverse video for emphasis. Neovim uses its bundled `vim` colorscheme (legacy defaults on versions before 0.10) with `termguicolors` disabled, so it inherits the terminal's default foreground/background and uses indexed syntax colors. Lualine reuses Neovim's statusline highlights. Zsh's Pure prompt already uses terminal palette colors.
+Tmux's status bar uses the terminal's default foreground/background, a bold session name, and a bold, underlined active window. Neovim uses its bundled `vim` colorscheme (legacy defaults on versions before 0.10) with `termguicolors` disabled, so it inherits the terminal's default foreground/background and uses indexed syntax colors. Lualine reuses Neovim's statusline highlights. Zsh's Pure prompt already uses terminal palette colors.
 
 Neovim leaves `background` unset so its terminal UI can detect light/dark appearance. If detection fails (for example, through an older tmux or SSH setup), use `:set background=light` or `:set background=dark`. Some built-in highlights and plugins use extended 256-color entries, so changing a terminal theme need not recolor every accent. This trades independent RGB editor colors for terminal palette integration; to use an RGB colorscheme later, enable `termguicolors` and load that scheme.
 
@@ -74,7 +74,9 @@ Designed for Ubuntu / WSL and shared-server environments. The script configures 
 
 ## Zsh configuration and migration
 
-Both setup scripts install [Zim](https://github.com/zimfw/zimfw) for the current user and deploy `configs/zsh/zimrc` as `${ZDOTDIR:-$HOME}/.zimrc`. The selected modules provide environment defaults, input keybindings, utility aliases/man-page colors, and completion. Pure, `rupa/z`, and fzf are retained. General helper aliases and completion styling follow Zim's defaults; the explicit `rm`/`mv`/`cp` confirmation aliases and `vim`/`vi` aliases remain.
+On macOS, local Zsh sessions use Keeper's SSH agent when its socket exists. Enable the agent in Keeper and keep the vault unlocked, then open a new terminal or run `exec zsh -l`. Check the connection with `ssh-add -l`. Sessions connected to this Mac over SSH retain their forwarded agent; Linux / WSL agent settings are left as supplied by the environment.
+
+Both setup scripts install [Zim](https://github.com/zimfw/zimfw) for the current user and deploy `configs/zsh/zimrc` as `${ZDOTDIR:-$HOME}/.zimrc`. The selected modules provide environment defaults, input keybindings, utility aliases/man-page colors, and completion. Pure, `rupa/z`, and fzf are retained. General helper aliases and completion styling follow Zim's defaults; the explicit `rm`/`mv`/`cp` confirmation aliases and `vim`/`vi` aliases remain. Following Zim's recommended configuration, `/` is removed from `WORDCHARS`, so Option/Alt+Backspace deletes one path component at a time while keeping filename punctuation together.
 
 To migrate an existing installation, rerun the setup script for that machine, then open a new shell or run `exec zsh -l`. Changed `.zshrc` and `.zimrc` files are backed up automatically. The existing `~/.zsh_history` is reused. Antidote and its old `.zsh_plugins.txt` and caches are no longer loaded; the setup leaves those files in place.
 

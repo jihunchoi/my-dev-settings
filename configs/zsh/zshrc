@@ -1,6 +1,14 @@
 # Make user-installed tools available to modules and fzf initialization.
 export PATH="$HOME/.local/bin:$PATH"
 
+# Use Keeper's local macOS SSH agent when its socket is available.
+# Preserve the forwarded agent when this Mac is reached over SSH.
+if [[ "$OSTYPE" == darwin* && -z "${SSH_CONNECTION:-}" && -z "${SSH_CLIENT:-}" ]]; then
+    if [[ -S "$HOME/Library/Containers/com.callpod.keepermac.lite/Data/tmp/keeper-ssh-agent.sock" ]]; then
+        export SSH_AUTH_SOCK="$HOME/Library/Containers/com.callpod.keepermac.lite/Data/tmp/keeper-ssh-agent.sock"
+    fi
+fi
+
 # Keep the existing Oh My Zsh history file when migrating to Zim.
 HISTFILE="${HISTFILE:-$HOME/.zsh_history}"
 bindkey -e
@@ -22,6 +30,9 @@ fi
 (( HISTSIZE < 50000 )) && HISTSIZE=50000
 (( SAVEHIST < 10000 )) && SAVEHIST=10000
 setopt EXTENDED_HISTORY HIST_EXPIRE_DUPS_FIRST PUSHD_MINUS CLOBBER
+
+# Use Zim's recommended word boundaries: stop at path separators.
+WORDCHARS=${WORDCHARS//[\/]}
 
 # Aliases
 alias rm='rm -i'

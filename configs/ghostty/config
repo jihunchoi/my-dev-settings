@@ -1,4 +1,7 @@
 # Use the left Option key for tmux's Alt+hjkl and Alt+number navigation.
 macos-option-as-alt = left
 
+# Configure SSH terminal compatibility through Ghostty's shell integration.
+shell-integration-features = ssh-env,ssh-terminfo
+
 # Font and theme are intentionally left to Ghostty's defaults or personal config.

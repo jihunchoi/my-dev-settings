@@ -17,7 +17,7 @@ Neovim leaves `background` unset so its terminal UI can detect light/dark appear
 
 ### ⌨️ Key Mapping Essentials
 * **Leader Key**: `Space`
-* **Alt Navigation**: Your terminal must be configured to treat the **Alt/Option** key as `Meta` (Esc+) to allow `Alt + h/j/k/l` pane switching.
+* **Alt Navigation**: Your terminal must be configured to treat the **Alt/Option** key as `Meta` (Esc+) to allow `Alt + h/j/k/l` pane switching and `Alt + number` window switching.
 * **Key Repeat**: The setup scripts handle disabling the OS "Accent Menu" (long-press menu) to allow for high-speed Vim motions.
 
 ---
@@ -92,6 +92,8 @@ Zim modules are installed and `init.zsh` is generated during setup. Normal shell
 | **Vertical Split** | `Prefix + v` or `|` |
 | **Horizontal Split** | `Prefix + s` or `-` |
 | **Navigate Panes** | `Alt + h/j/k/l` |
+| **Select Window 1–9** | `Alt + 1` through `Alt + 9` (no prefix) |
+| **Select Window 10** | `Alt + 0` (no prefix) |
 | **Resize Pane (5px)** | `Prefix + Shift + H/J/K/L` |
 | **Reload Config** | `Prefix + r` |
 

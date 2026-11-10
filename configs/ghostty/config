@@ -4,4 +4,6 @@ macos-option-as-alt = left
 # Configure SSH terminal compatibility through Ghostty's shell integration.
 shell-integration-features = ssh-env,ssh-terminfo
 
+bell-features = border,title,no-audio,no-system,no-attention
+
 # Font and theme are intentionally left to Ghostty's defaults or personal config.
